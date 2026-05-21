@@ -1,0 +1,10 @@
+[package]
+name = "demos"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "demos"
+path = "src/all.rs"
+
+[dependencies]

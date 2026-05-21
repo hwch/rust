@@ -1,0 +1,10 @@
+[workspace]
+members=[
+    "demos",
+    "igrep",
+    "demorun",
+    "webserver",
+    "demobins",
+    "exam"
+]
+resolver = "2"

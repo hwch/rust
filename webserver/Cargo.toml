@@ -1,0 +1,11 @@
+[package]
+name = "webserver"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name="wsrv"
+path="src/start.rs"
+
+[dependencies]
+lazy_static = "1.4.0"

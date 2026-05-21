@@ -1,0 +1,9 @@
+[package]
+name = "igrep"
+version = "0.0.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+description = "A very simple program similar to GNU grep, used for learning purposes"
+
+
+[dependencies]

@@ -6,5 +6,5 @@ members=[
     "webserver",
     "demobins",
     "exam"
-]
-resolver = "2"
+, "restaurant"]
+resolver = "3"

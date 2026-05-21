@@ -1,5 +1,5 @@
-use igrep::run;
-use igrep::Config;
+use i_learn_grep::Config;
+use i_learn_grep::run;
 use std::env;
 use std::process;
 fn main() {

@@ -20,6 +20,9 @@ version = "0.1.0"
 [[package]]
 name = "exam"
 version = "0.1.0"
+dependencies = [
+ "i_learn_grep",
+]
 
 [[package]]
 name = "i_learn_grep"

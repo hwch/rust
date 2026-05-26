@@ -1,7 +1,7 @@
 [workspace]
 members=[
     "demos",
-    "igrep",
+    "i_learn_grep",
     "demorun",
     "webserver",
     "demobins",

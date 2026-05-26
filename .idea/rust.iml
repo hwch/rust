@@ -7,9 +7,9 @@
       <sourceFolder url="file://$MODULE_DIR$/demorun/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/demos/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/exam/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/igrep/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/restaurant/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/webserver/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/i_learn_grep/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

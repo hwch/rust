@@ -5,4 +5,4 @@ edition = "2024"
 
 
 [dependencies]
-i_learn_grep = { path = "../igrep" }
+i_learn_grep = { path = "../i_learn_grep" }

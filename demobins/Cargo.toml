@@ -72,6 +72,10 @@ name="exam2-8"
 path="src/2/8.rs"
 
 [[bin]]
+name="exam2-9"
+path="src/2/9.rs"
+
+[[bin]]
 name="exam3-1"
 path="src/3/1.rs"
 
@@ -1014,3 +1018,6 @@ path="src/17/3/5.rs"
 [[bin]]
 name="exam17_3-6"
 path="src/17/3/6.rs"
+
+[dependencies]
+trpl = "0.3.0"

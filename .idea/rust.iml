@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="EMPTY_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/async_demos/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/demobins/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/demorun/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/demos/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/exam/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/igrep/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/restaurant/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/webserver/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

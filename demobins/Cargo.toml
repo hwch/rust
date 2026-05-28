@@ -1061,3 +1061,4 @@ path="src/17/3/6.rs"
 
 [dependencies]
 trpl = "0.3.0"
+blog = {path= "../blog"}

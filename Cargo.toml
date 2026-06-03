@@ -6,5 +6,5 @@ members=[
     "webserver",
     "demobins",
     "exam"
-, "restaurant", "async_demos", "blog", "advanced", "macro_demos"]
+, "restaurant", "async_demos", "blog", "advanced", "macro_demos", "websrv"]
 resolver = "3"

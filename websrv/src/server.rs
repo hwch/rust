@@ -1,5 +1,6 @@
 use crate::IError;
 use crate::ThreadPool;
+
 use std::fs;
 use std::io::{BufReader, prelude::*};
 use std::net::TcpListener;
@@ -10,21 +11,28 @@ use std::time;
 
 pub type IReturn<I> = std::result::Result<I, IError>;
 
-pub struct Runtime {
+pub struct Server {
     ip: String,
     port: i32,
     pool: ThreadPool,
 }
 
-impl Runtime {
+impl Server {
+    // 最大错误数
     const MAX_ERR: i32 = 10;
+    // 正常响应
     const STATUS_OK: &str = "HTTP/1.1 200 OK";
+    // 未找到响应
     const STATUS_NOT_FOUND: &str = "HTTP/1.1 404 NOT FOUND";
-    const MAX_POOL: usize = 100;
-    pub fn build(args: Vec<String>) -> IReturn<Runtime> {
+    // 线程池最大线程数
+    const MAX_POOL: usize = 1024;
+    // 线程池默认线程数
+    const DEFAULT_POOL: usize = 10;
+    /// 解析命令行参数并返回Server实体且初始化线程池
+    pub fn build(args: Vec<String>) -> IReturn<Server> {
         let mut ip = String::from("127.0.0.1");
         let mut port = 8080;
-        let mut pool_size = 10;
+        let mut pool_size = Server::DEFAULT_POOL;
         for (index, value) in args.iter().map(|e| e.as_str()).enumerate() {
             match value {
                 "-j" => {
@@ -36,8 +44,8 @@ impl Runtime {
                     } else {
                         return Err("请输入有效的数字".into());
                     };
-                    if _pool_size > Runtime::MAX_POOL {
-                        pool_size = Runtime::MAX_POOL;
+                    if _pool_size > Server::MAX_POOL {
+                        pool_size = Server::MAX_POOL;
                     } else {
                         pool_size = _pool_size;
                     }
@@ -71,9 +79,11 @@ impl Runtime {
                 }
             }
         }
-        let pool = ThreadPool::build(pool_size)?;
-        Ok(Runtime { ip, port, pool })
+        let pool = ThreadPool::build(pool_size)?; // 初始化线程池
+        Ok(Server { ip, port, pool })
     }
+    /// 服务器监听运行，在incoming连续出错MAX_ERR次后服务器会退出
+    ///
     pub fn run(&self) -> IReturn<()> {
         let mut err_count = 0;
         let listener = TcpListener::bind(format!("{}:{}", self.ip, self.port))?;
@@ -86,7 +96,7 @@ impl Runtime {
                 }
                 Err(e) => {
                     err_count += 1;
-                    if err_count == Runtime::MAX_ERR {
+                    if err_count == Server::MAX_ERR {
                         return Err(e.into());
                     }
                     eprintln!("获取连接发生错误: {:?}", e);
@@ -112,7 +122,7 @@ impl Runtime {
                     Ok(v) => v.to_string(),
                     _ => "Unkown Host".to_string(),
                 };
-                let res = Runtime::handle_connection(stream);
+                let res = Server::handle_connection(stream);
                 if res.is_err() {
                     eprintln!("连接{}发生错误: {:?}", addr, res);
                 }
@@ -134,8 +144,8 @@ impl Runtime {
         }
 
         match elems[0] {
-            "GET" => Runtime::get(elems[1], &mut stream)?,
-            "POS" => Runtime::post(elems[1], &mut stream)?,
+            "GET" => Server::get(elems[1], &mut stream)?,
+            "POS" => Server::post(elems[1], &mut stream)?,
             _ => {
                 eprintln!("{buf}");
                 return Err(IError::InvalidRequestError);
@@ -147,12 +157,12 @@ impl Runtime {
 
     fn get(uri: &str, stream: &mut TcpStream) -> IReturn<()> {
         let (filename, status) = match uri {
-            "/" => ("hello.html", Runtime::STATUS_OK),
+            "/" => ("hello.html", Server::STATUS_OK),
             "/sleep" => {
                 thread::sleep(time::Duration::from_secs(10));
-                ("hello.html", Runtime::STATUS_OK)
+                ("hello.html", Server::STATUS_OK)
             }
-            _ => ("404.html", Runtime::STATUS_NOT_FOUND),
+            _ => ("404.html", Server::STATUS_NOT_FOUND),
         };
 
         let contents = fs::read_to_string(filename)?;

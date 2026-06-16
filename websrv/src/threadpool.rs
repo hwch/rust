@@ -75,7 +75,7 @@ impl ThreadPool {
     /// # Panics
     ///
     /// 如果 size 为 0，`build` 方法会 返回PoolCreationError。
-    pub fn build(size: usize) -> Result<ThreadPool, IError> {
+    pub fn build(size: usize) -> Result<Self, IError> {
         if size == 0 {
             return Err(IError::PoolCreationError);
         }

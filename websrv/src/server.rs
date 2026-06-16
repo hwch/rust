@@ -29,7 +29,7 @@ impl Server {
     // 线程池默认线程数
     const DEFAULT_POOL: usize = 10;
     /// 解析命令行参数并返回Server实体且初始化线程池
-    pub fn build(args: Vec<String>) -> IReturn<Server> {
+    pub fn build(args: Vec<String>) -> IReturn<Self> {
         let mut ip = String::from("127.0.0.1");
         let mut port = 8080;
         let mut pool_size = Server::DEFAULT_POOL;

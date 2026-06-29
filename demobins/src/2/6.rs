@@ -10,7 +10,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let _v = production_rate_per_hour(2);
 
     divide(15, 1);
-    working_items_per_minute(240);
+    working_items_per_minute(4);
     let n1 = "8".parse::<i32>()?;
     println!("Success!");
     Ok(())
@@ -23,7 +23,10 @@ fn divide(x: u8, y: u8) {
 fn production_rate_per_hour(speed: u8) -> f64 {
     let cph: u8 = 221;
     match speed {
-        1..=4 => (speed.wrapping_mul(cph)) as f64,
+        vv @ 1..=4 => {
+            println!("binding mode: {vv}");
+            (speed.wrapping_mul(cph)) as f64
+        }
         5..=8 => (speed.wrapping_mul(cph)) as f64 * 0.9,
         9..=10 => (speed.wrapping_mul(cph)) as f64 * 0.77,
         _ => 0 as f64,

@@ -4,6 +4,22 @@ version = "0.1.0"
 edition = "2021"
 
 [[bin]]
+name = "2-10"
+path = "src/2/10.rs"
+
+[[bin]]
+name = "2-9"
+path = "src/2/9.rs"
+
+[[bin]]
+name = "2-8"
+path = "src/2/8.rs"
+
+[[bin]]
+name = "2-7"
+path = "src/2/7.rs"
+
+[[bin]]
 name = "2-6"
 path = "src/2/6.rs"
 

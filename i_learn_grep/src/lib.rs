@@ -6,14 +6,14 @@ use std::fs;
 
 //
 fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    contents.lines().filter(|s| s.contains(query)).collect()
+    contents.lines().filter(|&s| s.contains(query)).collect()
 }
 
 fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let query = query.to_uppercase();
     contents
         .lines()
-        .filter(|s| s.to_uppercase().contains(&query))
+        .filter(|&s| s.to_uppercase().contains(&query))
         .collect()
 }
 

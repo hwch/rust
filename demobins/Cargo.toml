@@ -1,7 +1,51 @@
 [package]
 name = "demobins"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
+
+[[bin]]
+name = "4-1"
+path = "src/4/1.rs"
+
+[[bin]]
+name = "3-10"
+path = "src/3/10.rs"
+
+[[bin]]
+name = "3-9"
+path = "src/3/9.rs"
+
+[[bin]]
+name = "3-8"
+path = "src/3/8.rs"
+
+[[bin]]
+name = "3-7"
+path = "src/3/7.rs"
+
+[[bin]]
+name = "3-6"
+path = "src/3/6.rs"
+
+[[bin]]
+name = "3-5"
+path = "src/3/5.rs"
+
+[[bin]]
+name = "3-4"
+path = "src/3/4.rs"
+
+[[bin]]
+name = "3-3"
+path = "src/3/3.rs"
+
+[[bin]]
+name = "3-2"
+path = "src/3/2.rs"
+
+[[bin]]
+name = "3-1"
+path = "src/3/1.rs"
 
 [[bin]]
 name = "2-10"
@@ -90,3 +134,6 @@ path = "src/1/1.rs"
 [dependencies]
 trpl = "0.3.0"
 blog = { path = "../blog" }
+timer_future = { path = "../timer_future" }
+reqwest = "0.13"
+tokio = { version = "1", features = ["full"] }

@@ -1,14 +1,14 @@
-#![feature(macro_metavar_expr)]
-
-macro_rules! foo {
+macro_rules! i3 {
     () => {
-        macro_rules! bar {
-            ( $$( $$any:tt )* ) => { $$( $$any )* };
-        }
+        let mut i0:i32;
+    };
+    ($($x:ident),*) => {$(
+                let mut $x:i32;
+            )*
+
     };
 }
 
 fn main() {
-    foo!();
-    println!(bar!("haha"));
+    i3![x, y, z, a, b, c];
 }

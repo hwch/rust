@@ -9,12 +9,16 @@ async fn main() -> io::Result<()> {
 
     // 创建异步任务，在后台写入数据
     tokio::spawn(async move {
-        wr.write_all(b"hello ").await?;
-        wr.write_all(b"world\r\n").await?;
-        wr.write_all(b"hello ").await?;
-        wr.write_all(b"world\r\n").await?;
+        wr.write_all(b"123456\r\n").await?;
+        wr.write_all(b"1234567890\r\n").await?;
+        wr.write_all(b"1234567890\r\n").await?;
+        wr.write_all(b"1234567890\r\n").await?;
+        wr.write_all(b"1234567890\r\n").await?;
+        wr.write_all(b"1234567890\r\n").await?;
+        wr.write_all(b"1234567890\r\n").await?;
+        wr.write_all(b"1234567890\r\n").await?;
         // 有时，我们需要给予 Rust 一些类型暗示，它才能正确的推导出类型
-        // wr.shutdown().await;
+        let _ = wr.shutdown().await;
         Ok::<_, io::Error>(())
     });
 

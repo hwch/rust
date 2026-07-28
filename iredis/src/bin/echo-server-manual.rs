@@ -1,3 +1,4 @@
+use bytes::{Buf, BytesMut};
 use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
 
@@ -9,19 +10,27 @@ async fn main() -> io::Result<()> {
         let (mut socket, _) = listener.accept().await?;
 
         tokio::spawn(async move {
-            let mut buf = [0_u8; 1024];
-            let mut s = Vec::with_capacity(64);
+            let mut buf = BytesMut::with_capacity(4096);
+            let window = [0x0d, 0x0a];
             let (mut rd, mut wr) = socket.split();
             loop {
-                match rd.read(&mut buf[..]).await {
+                match rd.read_buf(&mut buf).await {
                     Ok(n) => {
                         if n == 0 {
                             eprintln!("Other closed");
                             return;
                         }
-                        s.append(&mut (&buf[..n]).to_vec());
-                        if s.ends_with(&[0x0d, 0x0a]) {
-                            break;
+                        while let Some(pos) = buf.windows(window.len()).position(|x| x == window) {
+                            eprintln!(
+                                "Write: {:?}",
+                                str::from_utf8(&buf[..pos + 2]).expect("无效的UTF8字符串")
+                            );
+                            if let Err(e) = wr.write(&mut buf[..pos + 2]).await {
+                                eprintln!("Write error: {:?}", e);
+                                return;
+                            }
+
+                            buf.advance(pos + 2); // 加上回车换行
                         }
                     }
                     Err(e) => {
@@ -29,10 +38,6 @@ async fn main() -> io::Result<()> {
                         return;
                     }
                 }
-            }
-            if let Err(e) = wr.write_all(&s).await {
-                eprintln!("Write error: {:?}", e);
-                return;
             }
         });
     }

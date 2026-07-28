@@ -3,6 +3,11 @@ name = "iredis"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+vec=[]
+bytes=[]
+default=["bytes"]
+
 [[example]]
 name = "hello-redis"
 path = "examples/hello-redis.rs"
@@ -10,3 +15,4 @@ path = "examples/hello-redis.rs"
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 mini-redis = "0.4"
+bytes = "1"

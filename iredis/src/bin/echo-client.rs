@@ -1,4 +1,4 @@
-use bytes::BytesMut;
+use bytes::{Buf, BytesMut};
 use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 
@@ -18,7 +18,7 @@ async fn main() -> io::Result<()> {
         Ok::<_, io::Error>(())
     });
 
-    let mut buf = BytesMut::with_capacity(4096);
+    let mut buf = BytesMut::with_capacity(8);
 
     loop {
         let n = rd.read_buf(&mut buf).await?;
@@ -27,7 +27,8 @@ async fn main() -> io::Result<()> {
             break;
         }
 
-        println!("GOT {:?}", &buf[..buf.len()]);
+        println!("GOT {:?}|{}|{}", buf, buf.len(), buf.capacity());
+        buf.advance(buf.len());
     }
 
     Ok(())

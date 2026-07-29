@@ -3,7 +3,7 @@ use crate::types::Result;
 use bytes::{Buf, BytesMut};
 use mini_redis::Frame;
 use std::io::Cursor;
-use tokio::io::{AsyncReadExt,AsyncWriteExt,BufWriter};
+use tokio::io::{AsyncReadExt, AsyncWriteExt, BufWriter};
 use tokio::net::TcpStream;
 
 #[cfg(feature = "vec")]
@@ -108,13 +108,11 @@ impl Connection {
                 }
             }
             _ => self.write_frame_non_array(frame).await?,
-            
         }
         self.flush().await?;
         Ok(())
     }
     async fn write_frame_non_array(&mut self, frame: &Frame) -> Result<()> {
-        
         match frame {
             Frame::Simple(v) => {
                 self.stream.write_u8(b'+').await?;
@@ -144,10 +142,10 @@ impl Connection {
                 self.stream.flush().await?; //立马清缓存
             }
             Frame::Array(_) => unreachable!("Should not reach here"),
-            }
-            Ok(())
         }
+        Ok(())
     }
+
     async fn flush(&mut self) -> Result<()> {
         if self.stream.buffer().len() > Connection::SEND_SIZE {
             self.stream.flush().await?;
@@ -170,7 +168,7 @@ impl Connection {
         if self.buffer.len() == 0 {
             return Ok(None);
         }
-        
+
         let mut cursor = Cursor::new(&self.buffer[..]);
         match Frame::check(&mut cursor) {
             //会修改position

@@ -22,7 +22,7 @@ async fn main() -> io::Result<()> {
         Ok::<_, io::Error>(())
     });
 
-    let mut buf = BytesMut::with_capacity(8);
+    let mut buf = BytesMut::with_capacity(1024);
 
     loop {
         let n = rd.read_buf(&mut buf).await?;

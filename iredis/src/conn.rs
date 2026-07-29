@@ -1,9 +1,9 @@
-use crate::frame::Frame;
+// use crate::frame::Frame;
 use crate::types::Result;
-use bytes::BytesMut;
-use mini_redis::Frame as RedisFrame;
+use bytes::{Buf, BytesMut};
+use mini_redis::Frame;
 use std::io::Cursor;
-use tokio::io::AsyncReadExt;
+use tokio::io::{AsyncReadExt,AsyncWriteExt,BufWriter};
 use tokio::net::TcpStream;
 
 #[cfg(feature = "vec")]
@@ -15,24 +15,23 @@ struct Connection {
 
 #[cfg(feature = "bytes")]
 struct Connection {
-    stream: TcpStream,
+    stream: BufWriter<TcpStream>,
     buffer: BytesMut,
-    cursor: usize,
 }
 
 impl Connection {
+    const SEND_SIZE: usize = 4096;
     #[cfg(feature = "bytes")]
     pub fn new(stream: TcpStream) -> Self {
         Self {
-            stream,
+            stream: BufWriter::new(stream),
             buffer: BytesMut::with_capacity(4096),
-            cursor: 0,
         }
     }
     #[cfg(feature = "vec")]
     pub fn new(stream: TcpStream) -> Self {
         Self {
-            stream,
+            stream: BufWriter::new(stream),
             buffer: vec![0; 4096],
             cursor: 0,
         }
@@ -94,11 +93,97 @@ impl Connection {
     }
 
     /// 将帧写入到连接中
-    pub async fn write_frame(&mut self) -> Result<()> {
+    pub async fn write_frame(&mut self, frame: &Frame) -> Result<()> {
+        match frame {
+            Frame::Array(val) => {
+                // Encode the frame type prefix. For an array, it is `*`.
+                self.stream.write_u8(b'*').await?;
+
+                // Encode the length of the array.
+                self.write_decimal(val.len() as u64).await?;
+
+                // Iterate and encode each entry in the array.
+                for entry in &*val {
+                    self.write_frame_non_array(entry).await?;
+                }
+            }
+            _ => self.write_frame_non_array(frame).await?,
+            
+        }
+        self.flush().await?;
+        Ok(())
+    }
+    async fn write_frame_non_array(&mut self, frame: &Frame) -> Result<()> {
+        
+        match frame {
+            Frame::Simple(v) => {
+                self.stream.write_u8(b'+').await?;
+                self.stream.write_all(v.as_bytes()).await?;
+                self.stream.write_all(b"\r\n").await?;
+            }
+            Frame::Error(val) => {
+                self.stream.write_u8(b'-').await?;
+                self.stream.write_all(val.as_bytes()).await?;
+                self.stream.write_all(b"\r\n").await?;
+            }
+            Frame::Integer(val) => {
+                self.stream.write_u8(b':').await?;
+                self.write_decimal(*val).await?;
+            }
+            Frame::Null => {
+                self.stream.write_all(b"$-1\r\n").await?;
+            }
+            Frame::Bulk(val) => {
+                let len = val.len();
+
+                self.stream.write_u8(b'$').await?;
+
+                self.write_decimal(len as u64).await?;
+                self.stream.write_all(val).await?;
+                self.stream.write_all(b"\r\n").await?;
+                self.stream.flush().await?; //立马清缓存
+            }
+            Frame::Array(_) => unreachable!("Should not reach here"),
+            }
+            Ok(())
+        }
+    }
+    async fn flush(&mut self) -> Result<()> {
+        if self.stream.buffer().len() > Connection::SEND_SIZE {
+            self.stream.flush().await?;
+        }
         Ok(())
     }
 
+    async fn write_decimal(&mut self, v: u64) -> Result<()> {
+        use std::io::Write;
+        let buf = [0u8; 12];
+        let mut buf = Cursor::new(buf);
+        let _ = write!(&mut buf, "{}", v);
+
+        let pos = buf.position() as usize;
+        self.stream.write_all(&buf.get_ref()[..pos]).await?;
+        self.stream.write_all(b"\r\n").await?;
+        Ok(())
+    }
     fn parse_frame(&mut self) -> Result<Option<Frame>> {
-        Ok(None)
+        if self.buffer.len() == 0 {
+            return Ok(None);
+        }
+        
+        let mut cursor = Cursor::new(&self.buffer[..]);
+        match Frame::check(&mut cursor) {
+            //会修改position
+            Ok(_) => {
+                let len = cursor.position() as usize;
+                cursor.set_position(0);
+                let frame = Frame::parse(&mut cursor)?;
+                self.buffer.advance(len);
+
+                return Ok(Some(frame));
+            }
+            Err(mini_redis::frame::Error::Incomplete) => return Ok(None),
+            Err(e) => return Err(e.into()),
+        }
     }
 }

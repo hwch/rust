@@ -1,4 +1,5 @@
 use bytes::{Buf, BytesMut};
+use memchr::memmem;
 use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
 
@@ -20,7 +21,7 @@ async fn main() -> io::Result<()> {
                             eprintln!("Other closed");
                             return;
                         }
-                        while let Some(pos) = buf.windows(window.len()).position(|x| x == window) {
+                        while let Some(pos) = memmem::find(&buf, &window) {
                             eprintln!(
                                 "Write: {:?}",
                                 str::from_utf8(&buf[..pos + 2]).expect("无效的UTF8字符串")

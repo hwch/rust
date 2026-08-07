@@ -1,6 +1,6 @@
 use bytes::Bytes;
-use mini_redis::Command::{Get, Set};
-use mini_redis::{Command, Connection, Frame};
+use iredis::{Command, Connection, Frame};
+
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use tokio::net::{TcpListener, TcpStream};
@@ -9,7 +9,7 @@ type Db = Arc<Mutex<HashMap<String, Bytes>>>;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    let server = TcpListener::bind("127.0.0.1:6379").await?;
+    let server = TcpListener::bind("0.0.0.0:6379").await?;
     let db = Arc::new(Mutex::new(HashMap::new()));
     loop {
         let (stream, addr) = server.accept().await?;
@@ -60,7 +60,7 @@ async fn do_frame(connection: &mut Connection, frame: Frame, db: &Db) {
     };
 
     let response = match cmd {
-        Set(cmd) => {
+        Command::Set(cmd) => {
             // 值被存储为 `Vec<u8>` 的形式
             if let Ok(mut db) = db.lock() {
                 db.insert(cmd.key().to_string(), cmd.value().clone());
@@ -70,7 +70,7 @@ async fn do_frame(connection: &mut Connection, frame: Frame, db: &Db) {
                 return;
             }
         }
-        Get(cmd) => {
+        Command::Get(cmd) => {
             if let Ok(db) = db.lock() {
                 if let Some(value) = db.get(cmd.key()) {
                     // `Frame::Bulk` 期待数据的类型是 `Bytes`， 该类型会在后面章节讲解，

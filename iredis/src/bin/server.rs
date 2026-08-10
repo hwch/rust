@@ -19,7 +19,6 @@ async fn main() -> std::io::Result<()> {
             process(stream, db).await;
         });
     }
-    Ok(())
 }
 
 async fn process(stream: TcpStream, db: Db) {

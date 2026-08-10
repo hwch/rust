@@ -2,7 +2,6 @@ use crate::frame::Frame as MyFrame;
 use crate::types::Result;
 
 use bytes::{Buf, BytesMut};
-use mini_redis::Frame;
 use std::io::Cursor;
 use tokio::io::{AsyncReadExt, AsyncWriteExt, BufWriter};
 use tokio::net::TcpStream;
@@ -110,7 +109,7 @@ impl Connection {
             }
             _ => self.write_frame_non_array(frame).await?,
         }
-        self.flush().await?;
+        self.flush(false).await?;
         Ok(())
     }
     async fn write_frame_non_array(&mut self, frame: &MyFrame) -> Result<()> {
@@ -131,6 +130,7 @@ impl Connection {
             }
             MyFrame::Null => {
                 self.stream.write_all(b"$-1\r\n").await?;
+                self.flush(true).await?;
             }
             MyFrame::Bulk(val) => {
                 let len = val.len();
@@ -146,8 +146,10 @@ impl Connection {
         Ok(())
     }
 
-    async fn flush(&mut self) -> Result<()> {
-        if self.stream.buffer().len() > Connection::SEND_SIZE {
+    pub async fn flush(&mut self, force: bool) -> Result<()> {
+        if (force && !self.stream.buffer().is_empty())
+            || self.stream.buffer().len() > Connection::SEND_SIZE
+        {
             self.stream.flush().await?;
         }
         Ok(())

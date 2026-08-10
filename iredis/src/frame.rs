@@ -1,7 +1,6 @@
 use bytes::{Buf, Bytes};
 use memchr::memmem;
 use std::num::ParseIntError;
-use std::process::id;
 use std::str::Utf8Error;
 use std::{
     fmt::{Display, Formatter, Result as FmtResult},
@@ -167,10 +166,6 @@ impl Frame {
             b'*' => unreachable!("Should not reach here"), //Array
             _ => Err("Unkown frame type".into()),
         }
-    }
-    /// Converts the frame to an "unexpected frame" error
-    pub(crate) fn to_error(&self) -> crate::Error {
-        format!("unexpected frame: {}", self).into()
     }
 }
 

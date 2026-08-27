@@ -1,10 +1,15 @@
 [workspace]
-members=[
-    "demos",
-    "i_learn_grep",
-    "demorun",
-    "webserver",
+members = [
+    "advanced",
+    "async_demos",
+    "blog",
     "demobins",
-    "exam"
-, "restaurant", "async_demos", "blog", "advanced", "macro_demos", "websrv", "eular", "timer_future", "iredis"]
+    "demorun",    "demos",    "eular",    "exam",    "i_learn_grep",
+    "iredis",
+    "macro_demos",
+    "restaurant", "sql_editor",
+    "timer_future",
+    "webserver",
+    "websrv",
+]
 resolver = "3"
